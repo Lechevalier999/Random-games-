@@ -1,19 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head>    
- </head>  
-<body> 
-  
+<head>
+  <style>
+    #game {
+      display: grid;
+      grid-template-columns: repeat(28, 8px); /* 28 tiles wide */
+      grid-auto-rows: 8px; /* each tile is 8px tall */
+    }
+
+    .tile {
+      width: 8px;
+      height: 8px;
+    }
+
+    .wall {
+      background-color: #3b2aff; /* Pac-Man wall blue/purple */
+    }
+
+    .floor {
+      background-color: black;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game"></div>
+
 <script>
-// JavaScript|Main.js
- // Initialize variables
- let score = 0
- let lives = 3
- let playerX = 0
- let playerY = 0
- // Initialize map grids
-  // each digit is a 8 by 8 px sqaure aka a "tile" 1 means blue wall 0 means black empty space the maps use a coordinate system X and Y
- const mapGrid = [
+const mapGrid = [
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -49,11 +63,26 @@
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
- ];
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+];
+
+  const game = document.getElementById("game");
+
+  for (let row = 0; row < mapGrid.length; row++) {
+    for (let col = 0; col < mapGrid[row].length; col++) {
+      const tile = document.createElement("div");
+      tile.classList.add("tile");
+
+      if (mapGrid[row][col] === 1) {
+        tile.classList.add("wall");
+      } else {
+        tile.classList.add("floor");
+      }
+
+      game.appendChild(tile);
+    }
+  }
 </script>
-  
- </body>
+
+</body>
 </html>
-
-
