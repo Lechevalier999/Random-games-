@@ -27,6 +27,7 @@
 <div id="game"></div>
 
 <script>
+  // map
 const mapGrid = [
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -66,7 +67,7 @@ const mapGrid = [
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ];
-
+  // Map drawer
   const game = document.getElementById("game");
 
   for (let row = 0; row < mapGrid.length; row++) {
@@ -83,7 +84,64 @@ const mapGrid = [
       game.appendChild(tile);
     }
   }
+
+  // Player script
+   // initialise variables
+    let playerX = 0
+    let playerY = 0
+    let playerVelocity = 8 // 1 tile per second
+    let playerDir = 90 // 90 right, -90 left, 180 up, -180 down.
+    
+
+   // functions
+   function changeDir() {
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'w') {
+          playerDir == 180
+      }
+     });
+     document.addEventListener('keydown', (event) => {
+       if (event.key === 'a') {
+         playerDir == -90
+      }                                
+     });                 
+     document.addEventListener('keydown', (event) => {
+       if (event.key === 's') {
+         playerDir == -180
+      }                                
+     });      
+      document.addEventListener('keydown', (event) => {
+       if (event.key === 'd') {
+         playerDir == 90
+      }                                
+     });  
+    }
+    function move() {
+      if (playerDir === 90) {
+         playerX == playerX + 8
+      }
+      if (playerDir === -90) {
+         playerX == playerX - 8
+      }
+      if (playerDir === 180) {
+         playerY == playerY + 8
+      }
+      if (playerDir === -180) {
+         playerY == playerY - 8
+      }      
+    }
+   // player movement loop 
+   for (let i = 0; i < 99999999; i++) {
+     if (playerDir === 90) {
+      if not ((playerX - 28) * 10)  {
+        move()
+       }       
+      }
+    }
+
+  
 </script>
+  
 
 </body>
 </html>
