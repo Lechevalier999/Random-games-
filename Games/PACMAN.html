@@ -2,23 +2,41 @@
 <html>
 <head>
   <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
     #game {
       display: grid;
-      grid-template-columns: repeat(28, 8px); /* 28 tiles wide */
-      grid-auto-rows: 8px; /* each tile is 8px tall */
+      width: 100vw;
+      height: 100vh;
+
+      /* FIXED: exact grid size */
+      grid-template-columns: repeat(28, 1fr);
+      grid-template-rows: repeat(36, 1fr);
     }
 
     .tile {
-      width: 8px;
-      height: 8px;
+      width: 100%;
+      height: 100%;
     }
 
     .wall {
-      background-color: #3b2aff; /* Pac-Man wall blue/purple */
+      background-color: #3b2aff;
     }
 
     .floor {
       background-color: black;
+    }
+    .player {
+      background: yellow;
+      border-radius: 50%;
+      z-index: 10;
     }
   </style>
 </head>
@@ -28,8 +46,7 @@
 
 <script>
   
-  // map
-  
+// map 
 const mapGrid = [
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -67,118 +84,103 @@ const mapGrid = [
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ];
-  
-  // Map drawer
-  
-  const game = document.getElementById("game");
 
-  for (let row = 0; row < mapGrid.length; row++) {
-    for (let col = 0; col < mapGrid[row].length; col++) {
-      const tile = document.createElement("div");
-      tile.classList.add("tile");
+// Map drawer
+const game = document.getElementById("game");
 
-      if (mapGrid[row][col] === 1) {
-        tile.classList.add("wall");
-      } else {
-        tile.classList.add("floor");
-      }
+for (let row = 0; row < mapGrid.length; row++) {
+  for (let col = 0; col < mapGrid[row].length; col++) {
+    const tile = document.createElement("div");
+    tile.classList.add("tile");
 
-      game.appendChild(tile);
+    if (mapGrid[row][col] === 1) {
+      tile.classList.add("wall");
+    } else {
+      tile.classList.add("floor");
     }
+
+    game.appendChild(tile);
+  }
+}
+  
+// Create Pac-Man
+const player = document.createElement("div");
+player.classList.add("player");
+game.appendChild(player);
+  
+function updatePlayerPosition() {
+  player.style.gridColumn = playerCol + 1;
+  player.style.gridRow = playerRow + 1;
+}
+
+updatePlayerPosition();
+
+
+// Player scripts
+
+let playerCol = 14;
+let playerRow = 26;
+let playerVelocity = 1;
+let playerDir = 90;
+let gameOn = true;
+
+// syntax‑only fix
+function changeDir(key) {
+  if (key === "w") {
+    playerDir = 180;
+  } else if (key === "a") {
+    playerDir = -90;
+  } else if (key === "s") {
+    playerDir = -180;
+  } else if (key === "d") {
+    playerDir = 90;
+  }
+}
+
+function move() {
+  if (playerDir == 90) playerCol++;
+  if (playerDir == -90) playerCol--;
+  if (playerDir == 180) playerRow++;
+  if (playerDir == -180) playerRow--;
+  updatePlayerPosition();
+}
+
+// Player movement loop
+while (gameOn == true) {
+
+  if (playerDir == 90) {
+    let next = mapGrid[playerRow][playerCol + 1];
+    if (next != 1) move();
   }
 
-  // Player scripts
-  
-   // initialise variables
-  
-    let playerCol = 14
-    let playerRow = 26
-    let playerVelocity = 1 // 1 tile per second
-    let playerDir = 90 // 90 right, -90 left, 180 up, -180 down.
-    let gameOn = true
+  if (playerDir == -90) {
+    let next = mapGrid[playerRow][playerCol - 1];
+    if (next != 1) move();
+  }
 
-   // functions
-  
-   function changeDir(key) {
-      if key === "w" then {
-        playerDir = 180;
-      } else {
-        if key === "a" then {
-          playerDir = -90;
-        } else {
-          if key === "s" then {
-            playerDir = -180;
-          } else {
-            if key === "d" then {
-              playerDir = 90;
-            }
-          }
-        }
-      }
-    }
-  
-    function move() {
-      if (playerDir == 90) {
-         playerCol++
-      }
-      if (playerDir == -90) {
-         playerCol--
-      }
-      if (playerDir == 180) {
-         playerRow++
-      }
-      if (playerDir == -180) {
-         playerRow--
-      }      
-    }
-  
-   // player movement loop 
-  
-   for (gameOn == true) {
-     if playerDir = 90 then {
-       let next = mapGrid[playerRow][playerCol + 1]
-       if not next = 1 then {
-        move()
-       }
-     }
-     if playerDir = -90 then {
-       let next = mapGrid[playerRow][playerCol - 1]
-       if not next = 1 then {
-        move()
-       }
-     }
-     if playerDir = 180 then {
-       let next = mapGrid[playerRow + 1][playerCol]
-       if not next = 1 then {
-        move()
-       }
-     }
-     if playerDir = -180 then {
-       let next = mapGrid[playerRow - 1][playerCol]
-       if not next = 1 then {
-        move()
-       }
-     }
-     document.addEventListener('keydown', (event) => {
-      changeDir(event.key)
-     });
-   }       
+  if (playerDir == 180) {
+    let next = mapGrid[playerRow + 1][playerCol];
+    if (next != 1) move();
+  }
+
+  if (playerDir == -180) {
+    let next = mapGrid[playerRow - 1][playerCol];
+    if (next != 1) move();
+  }
+
+  document.addEventListener("keydown", (event) => {
+    changeDir(event.key);
+  });
+}
+
 // Ghosts
-  
-  // Blinky
-  
-    // personality
-  
-      // functions
-  
-       function getPlayerTile() {
-         let playerTile = [playerCol, playerRow]
-       }
-  
+function getPlayerTile() {
+  let playerTile = [playerCol, playerRow];
+}
+
 </script>
-  
 
 </body>
 </html>
