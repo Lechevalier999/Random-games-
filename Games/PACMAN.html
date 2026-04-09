@@ -27,7 +27,9 @@
 <div id="game"></div>
 
 <script>
+  
   // map
+  
 const mapGrid = [
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -67,9 +69,9 @@ const mapGrid = [
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ];
-const 
   
   // Map drawer
+  
   const game = document.getElementById("game");
 
   for (let row = 0; row < mapGrid.length; row++) {
@@ -87,57 +89,93 @@ const
     }
   }
 
-  // Player script
+  // Player scripts
+  
    // initialise variables
-    let playerX = 0
-    let playerY = 0
+  
+    let playerCol = 14
+    let playerRow = 26
     let playerVelocity = 1 // 1 tile per second
     let playerDir = 90 // 90 right, -90 left, 180 up, -180 down.
-    
+    let gameOn = true
 
    // functions
-   function changeDir() {
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'w') {
-          playerDir == 180
+  
+   function changeDir(key) {
+      if key == "w" then {
+        playerDir = 180;
+      } else {
+        if key == "a" then {
+          playerDir = -90;
+        } else {
+          if key == "s" then {
+            playerDir = -180;
+          } else {
+            if key == "d" then {
+              playerDir = 90;
+            }
+          }
+        }
       }
-     });
-     document.addEventListener('keydown', (event) => {
-       if (event.key === 'a') {
-         playerDir == -90
-      }                                
-     });                 
-     document.addEventListener('keydown', (event) => {
-       if (event.key === 's') {
-         playerDir == -180
-      }                                
-     });      
-      document.addEventListener('keydown', (event) => {
-       if (event.key === 'd') {
-         playerDir == 90
-      }                                
-     });  
     }
+  
     function move() {
-      if (playerDir === 90) {
-         playerX == playerX + 8
+      if (playerDir == 90) {
+         playerCol++
       }
-      if (playerDir === -90) {
-         playerX == playerX - 8
+      if (playerDir == -90) {
+         playerCol--
       }
-      if (playerDir === 180) {
-         playerY == playerY + 8
+      if (playerDir == 180) {
+         playerRow++
       }
-      if (playerDir === -180) {
-         playerY == playerY - 8
+      if (playerDir == -180) {
+         playerRow--
       }      
     }
+  
    // player movement loop 
-   for (let i = 0; i < 99999999; i++) {
-     
+  
+   for (gameOn == true) {
+     if playerDir = 90 then {
+       let next = mapGrid[playerRow][playerCol++]
+       if not next = 1 then {
+        move()
+       }
+     }
+     if playerDir = -90 then {
+       let next = mapGrid[playerRow][playerCol--]
+       if not next = 1 then {
+        move()
+       }
+     }
+     if playerDir = 180 then {
+       let next = mapGrid[playerRow++][playerCol]
+       if not next = 1 then {
+        move()
+       }
+     }
+     if playerDir = -180 then {
+       let next = mapGrid[playerRow--][playerCol]
+       if not next = 1 then {
+        move()
+       }
+     }
+     document.addEventListener('keydown', (event) => {
+      changeDir(event.key)
+     });
    }       
-    
-
+// Ghosts
+  
+  // Blinky
+  
+    // personality
+  
+      // functions
+  
+       function pacmanCords() {
+         let playerCords = [playerCol, playerRow]
+       }
   
 </script>
   
