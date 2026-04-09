@@ -228,20 +228,22 @@ function animateMouth(){
     mouthTimer = 0;
   }
 
-  let angle = mouthOpen ? 40 : 10;
+  let angle = mouthOpen ? 60 : 10;
 
-  // FIXED: mouth opens FORWARD now
+  // Proper wedge cut (no pizza bug)
   mouth.style.clipPath =
-    `polygon(50% 50%, 100% ${50 - angle/2}%, 100% ${50 + angle/2}%)`;
+    `polygon(50% 50%, 100% 0%, 100% 100%)`;
 
-  // rotation based on direction
+  // rotate + animate opening using scale
   let rot = 0;
   if (dir.x === 1) rot = 0;
   if (dir.x === -1) rot = 180;
   if (dir.y === 1) rot = 90;
   if (dir.y === -1) rot = 270;
 
-  mouth.style.transform = `rotate(${rot}deg)`;
+  let scaleY = mouthOpen ? 0.6 : 1;
+
+  mouth.style.transform = `rotate(${rot}deg) scaleY(${scaleY})`;
 }
 
 function draw(){
@@ -250,10 +252,11 @@ function draw(){
 }
 
 function loop(){
-  if(isCentered()){
-    let tx=playerX+nextDir.x*speed;
-    let ty=playerY+nextDir.y*speed;
-    if(canMove(tx,ty))dir=nextDir;
+
+  let tx=playerX+nextDir.x*speed;
+  let ty=playerY+nextDir.y*speed;
+  if(canMove(tx,ty)){
+    dir=nextDir;
   }
 
   let nx=playerX+dir.x*speed;
@@ -270,6 +273,7 @@ function loop(){
 
   requestAnimationFrame(loop);
 }
+
 
 buildMap();
 draw();
