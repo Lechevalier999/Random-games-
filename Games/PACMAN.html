@@ -132,11 +132,11 @@ updatePlayerPosition();
 // syntax‑only fix
 function changeDir(key) {
   if (key === "w") {
-    playerDir = 180;
+    playerDir = -180;
   } else if (key === "a") {
     playerDir = -90;
   } else if (key === "s") {
-    playerDir = -180;
+    playerDir = 180;
   } else if (key === "d") {
     playerDir = 90;
   }
