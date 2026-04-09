@@ -102,16 +102,16 @@ const mapGrid = [
    // functions
   
    function changeDir(key) {
-      if key == "w" then {
+      if key === "w" then {
         playerDir = 180;
       } else {
-        if key == "a" then {
+        if key === "a" then {
           playerDir = -90;
         } else {
-          if key == "s" then {
+          if key === "s" then {
             playerDir = -180;
           } else {
-            if key == "d" then {
+            if key === "d" then {
               playerDir = 90;
             }
           }
@@ -138,25 +138,25 @@ const mapGrid = [
   
    for (gameOn == true) {
      if playerDir = 90 then {
-       let next = mapGrid[playerRow][playerCol++]
+       let next = mapGrid[playerRow][playerCol + 1]
        if not next = 1 then {
         move()
        }
      }
      if playerDir = -90 then {
-       let next = mapGrid[playerRow][playerCol--]
+       let next = mapGrid[playerRow][playerCol - 1]
        if not next = 1 then {
         move()
        }
      }
      if playerDir = 180 then {
-       let next = mapGrid[playerRow++][playerCol]
+       let next = mapGrid[playerRow + 1][playerCol]
        if not next = 1 then {
         move()
        }
      }
      if playerDir = -180 then {
-       let next = mapGrid[playerRow--][playerCol]
+       let next = mapGrid[playerRow - 1][playerCol]
        if not next = 1 then {
         move()
        }
