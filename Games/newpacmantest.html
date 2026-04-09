@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: monospace;
+      color: white;
+    }
+
+    #game {
+      display: grid;
+      grid-template-columns: repeat(28, 16px);
+      grid-template-rows: repeat(36, 16px);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #ui {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 448px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+    }
+
+    .tile { width:16px; height:16px; position:relative; }
+    .wall { background:#3b2aff; }
+    .floor { background:black; }
+
+    .pellet {
+      width:4px; height:4px;
+      background:white;
+      border-radius:50%;
+      position:absolute;
+      top:6px; left:6px;
+    }
+
+    .player {
+      width:32px; height:32px;
+      position:absolute;
+      z-index:10;
+    }
+
+    .mouth {
+      width:100%; height:100%;
+      background:yellow;
+      border-radius:50%;
+      transform-origin:center;
+    }
+  </style>
+</head>
+<body>
+
+<div id="ui">
+  <div id="score">Score: 0</div>
+  <div id="round">Round: 1</div>
+</div>
+
+<div id="game"></div>
+
+<script>
+const TILE = 16;
+const PLAYER_SIZE = 32;
+
+// game state
+let score = 0;
+let round = 1;
+
+// player start
+let startX = 14*TILE + 8;
+let startY = 26*TILE + 8;
+let playerX = startX;
+let playerY = startY;
+
+let dir = {x:1,y:0};
+let nextDir = {x:1,y:0};
+let speed = 1.8;
+
+// mouth animation
+let mouthOpen = true;
+let mouthTimer = 0;
+
+// UI
+const scoreEl = document.getElementById("score");
+const roundEl = document.getElementById("round");
+
+// ✅ FULL MAP
+const mapGrid = [
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,1],
+[1,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,0,1,1,0,0,1,0,0,1,1,1,1,1,1,1,1,0,0,1,0,0,1,1,0,0,1],
+[1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,1],
+[1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,1],
+[1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1],
+[0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0],
+[0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0],
+[1,1,1,1,1,0,0,1,0,0,1,1,1,0,0,1,1,1,0,0,1,0,0,1,1,1,1,1],
+[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],
+[1,1,1,1,1,0,0,1,0,0,1,1,1,1,1,1,1,1,0,0,1,0,0,1,1,1,1,1],
+[0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0],
+[0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0],
+[1,1,1,1,1,0,0,1,0,0,1,1,1,1,1,1,1,1,0,0,1,0,0,1,1,1,1,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,1],
+[1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+[1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+[1,1,0,0,1,0,0,1,0,0,1,1,1,1,1,1,1,1,0,0,1,0,0,1,0,0,1,1],
+[1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,1],
+[1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,1],
+[1,0,0,1,1,1,1,1,1,1,1,0,0,1,1,0,0,1,1,1,1,1,1,1,1,0,0,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+];
+
+// rest of logic (buildMap, movement, pellets, loop)...
+
+const game = document.getElementById("game");
+let pellets = [];
+let pelletCount = 0;
+
+function buildMap(){
+  game.innerHTML="";
+  pellets=[];
+  pelletCount=0;
+
+  for(let r=0;r<mapGrid.length;r++){
+    pellets[r]=[];
+    for(let c=0;c<mapGrid[r].length;c++){
+      const tile=document.createElement("div");
+      tile.classList.add("tile");
+
+      if(mapGrid[r][c]===1){
+        tile.classList.add("wall");
+        pellets[r][c]=null;
+      }else{
+        tile.classList.add("floor");
+
+        if(r>2 && r<mapGrid.length-1){
+          const p=document.createElement("div");
+          p.classList.add("pellet");
+          tile.appendChild(p);
+          pellets[r][c]=p;
+          pelletCount++;
+        }
+      }
+      game.appendChild(tile);
+    }
+  }
+  game.appendChild(player);
+}
+
+const player=document.createElement("div");
+player.classList.add("player");
+const mouth=document.createElement("div");
+mouth.classList.add("mouth");
+player.appendChild(mouth);
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="w")nextDir={x:0,y:-1};
+  if(e.key==="s")nextDir={x:0,y:1};
+  if(e.key==="a")nextDir={x:-1,y:0};
+  if(e.key==="d")nextDir={x:1,y:0};
+});
+
+function isWall(x,y){
+  let c=Math.floor(x/16);
+  let r=Math.floor(y/16);
+  return mapGrid[r] && mapGrid[r][c]===1;
+}
+
+function canMove(x,y){
+  return !(isWall(x,y)||isWall(x+31,y)||isWall(x,y+31)||isWall(x+31,y+31));
+}
+
+function isCentered(){
+  return Math.abs((playerX-8)%16)<1 && Math.abs((playerY-8)%16)<1;
+}
+
+function eatPellet(){
+  let cx=playerX+16;
+  let cy=playerY+16;
+  let c=Math.floor(cx/16);
+  let r=Math.floor(cy/16);
+
+  if(pellets[r]&&pellets[r][c]){
+    pellets[r][c].remove();
+    pellets[r][c]=null;
+    score+=10;
+    pelletCount--;
+    scoreEl.textContent="Score: "+score;
+  }
+
+  if(pelletCount===0){
+    round++;
+    roundEl.textContent="Round: "+round;
+    playerX=startX;
+    playerY=startY;
+    buildMap();
+  }
+}
+
+function animateMouth(){
+  mouthTimer++;
+  if(mouthTimer>5){mouthOpen=!mouthOpen;mouthTimer=0;}
+  let angle=mouthOpen?40:5;
+  let rot=dir.x===1?0:dir.x===-1?180:dir.y===1?90:270;
+  mouth.style.clipPath=`polygon(0% ${angle}%,100% 50%,0% ${100-angle}%)`;
+  mouth.style.transform=`rotate(${rot}deg)`;
+}
+
+function draw(){
+  player.style.left=playerX+"px";
+  player.style.top=playerY+"px";
+}
+
+function loop(){
+  if(isCentered()){
+    let tx=playerX+nextDir.x*speed;
+    let ty=playerY+nextDir.y*speed;
+    if(canMove(tx,ty))dir=nextDir;
+  }
+
+  let nx=playerX+dir.x*speed;
+  let ny=playerY+dir.y*speed;
+
+  if(canMove(nx,ny)){
+    playerX=nx;
+    playerY=ny;
+  }
+
+  eatPellet();
+  animateMouth();
+  draw();
+
+  requestAnimationFrame(loop);
+}
+
+buildMap();
+draw();
+loop();
+</script>
+
+</body>
+</html>
