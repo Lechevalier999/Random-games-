@@ -14,12 +14,12 @@
     #game {
       display: grid;
       grid-template-columns: repeat(28, 8px);
-      grid-template-rows: repeat(36, 8px);
+      grid-template-rows: repeat(36, 8px); /* IMPORTANT */
       width: fit-content;
       height: fit-content;
       margin: auto;
-      margin-top: 20px;
     }
+
 
     .tile {
       width: 8px;
@@ -152,7 +152,7 @@ function move() {
 }
 
 // Player movement loop
-while (gameOn == true) {
+setInterval(() => {
 
   if (playerDir == 90) {
     let next = mapGrid[playerRow][playerCol + 1];
@@ -177,9 +177,12 @@ while (gameOn == true) {
   document.addEventListener("keydown", (event) => {
     changeDir(event.key);
   });
-}
+}, 100); // runs 10 times per second
+
 
 // Ghosts
+  
+// Blinky
 function getPlayerTile() {
   let playerTile = [playerCol, playerRow];
 }
