@@ -86,7 +86,9 @@ let playerY = startY;
 let dir = {x:1,y:0};
 let nextDir = {x:1,y:0};
 let speed = 1.8;
-
+let dir = { x: 0, y: 0 };   // was {1,0}
+let nextDir = { x: 1, y: 0 }; // start moving right
+  
 // mouth animation
 let mouthOpen = true;
 let mouthTimer = 0;
@@ -223,11 +225,25 @@ function eatPellet(){
 
 function animateMouth(){
   mouthTimer++;
-  if(mouthTimer>5){mouthOpen=!mouthOpen;mouthTimer=0;}
-  let angle=mouthOpen?40:5;
-  let rot=dir.x===1?0:dir.x===-1?180:dir.y===1?90:270;
-  mouth.style.clipPath=`polygon(0% ${angle}%,100% 50%,0% ${100-angle}%)`;
-  mouth.style.transform=`rotate(${rot}deg)`;
+  if(mouthTimer > 5){
+    mouthOpen = !mouthOpen;
+    mouthTimer = 0;
+  }
+
+  let angle = mouthOpen ? 40 : 10;
+
+  // FIXED: mouth opens FORWARD now
+  mouth.style.clipPath =
+    `polygon(50% 50%, 100% ${50 - angle/2}%, 100% ${50 + angle/2}%)`;
+
+  // rotation based on direction
+  let rot = 0;
+  if (dir.x === 1) rot = 0;
+  if (dir.x === -1) rot = 180;
+  if (dir.y === 1) rot = 90;
+  if (dir.y === -1) rot = 270;
+
+  mouth.style.transform = `rotate(${rot}deg)`;
 }
 
 function draw(){
