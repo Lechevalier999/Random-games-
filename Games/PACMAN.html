@@ -49,6 +49,11 @@
 <div id="game"></div>
 
 <script>
+let playerCol = 14;
+let playerRow = 26;
+let playerVelocity = 1;
+let playerDir = 90;
+let gameOn = true;
   
 // map 
 const mapGrid = [
@@ -123,12 +128,6 @@ updatePlayerPosition();
 
 
 // Player scripts
-
-let playerCol = 14;
-let playerRow = 26;
-let playerVelocity = 1;
-let playerDir = 90;
-let gameOn = true;
 
 // syntax‑only fix
 function changeDir(key) {
