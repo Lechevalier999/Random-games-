@@ -13,18 +13,19 @@
 
     #game {
       display: grid;
-      width: 100vw;
-      height: 100vh;
-
-      /* FIXED: exact grid size */
-      grid-template-columns: repeat(28, 1fr);
-      grid-template-rows: repeat(36, 1fr);
+      grid-template-columns: repeat(28, 8px);
+      grid-template-rows: repeat(36, 8px);
+      width: fit-content;
+      height: fit-content;
+      margin: auto;
+      margin-top: 20px;
     }
 
     .tile {
-      width: 100%;
-      height: 100%;
-    }
+      width: 8px;
+      height: 8px;
+    } 
+
 
     .wall {
       background-color: #3b2aff;
@@ -34,12 +35,13 @@
       background-color: black;
     }
     .player {
-      width: 100%;
-      height: 100%;
+      width: 8px;
+      height: 8px;
       background: yellow;
       border-radius: 50%;
       z-index: 10;
-     }
+    }
+
   </style>
 </head>
 <body>
