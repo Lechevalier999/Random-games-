@@ -1,24 +1,55 @@
 <DOCTYPE html>
 <html>
   <head>
-    <style>  
-      .playBtn {
-        font-size: 10px;
-        font-type: italic;
-        color: black;
+    <style>
+      .bet {
+        
       }
     </style>
   </head>
   <body>
-   <h1> Poker </h1>
+   <h1>BlackJack</h1>
    <script>
-     // functions
-     function startBlackJack() {
-       let cash = 0
-       let lifeSavings = 100000
-       
-     }
+     
+    // variables
+    let cash = 0;
+    let lifeSavings = 100000;
+    let currentNum = 0;
+     
+    // functions  
+    function withdraw$() {
+      let amount = prompt("How much $ do you want to withdraw from the atm?")
+      let withdrawAmount = parseFloat(input);
+      if (withdrawAmount < amount) {
+         alert("You do not have enough funds to withdraw that amount!")
+       } else {
+        alert("Withdrawed: $" + withdrawAmount "from your life savings")
+        cash += withdrawAmount;
+      }
+    }
+    function makeBet() {
+      let input = prompt("How much $ do you want to bet?");
+      let betAmount = parseFloat(input);
+      if (isNaN(betAmount) || betAmount <= 0) {
+          alert("Please enter a valid number.");
+        return;
+      }
+      if (betAmount > cash) {
+          alert("Your bet amount exceeds your current cash");
+      } else {
+          cash -= betAmount;
+          alert("Bet placed! Remaining cash: $" + cash);
+      }
+    }
+    function hit() {
+      
+    }
+    function stand() {
+      
+    }     
    </script>
-    <button onClick="startBlackJack()" class="playBtn">Play</button>
+    <button onClick="makeBet()" class="bet">Make a bet</button>
+    <button onClick="hit()" class="">Hit</button>
+    <button onClick="stand()" class="">Stand</button>
   </body>
 </html>
